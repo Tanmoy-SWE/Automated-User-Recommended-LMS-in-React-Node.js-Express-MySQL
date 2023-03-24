@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const cors = require('cors');
 const mysql = require('mysql2');
 
 // create a connection to the database
@@ -10,8 +11,10 @@ const connection = mysql.createConnection({
       database: 'LMS',
 });
 
+// enable CORS
+router.use(cors());
 // route to add a book
-router.post('/', (req, res) => {
+router.post('/addBook', (req, res) => {
     const { title, author, publication_date, isbn, status } = req.body;
     connection.query(
         'INSERT INTO books (title, author, publication_date, isbn, status) VALUES (?, ?, ?, ?, ?)',
