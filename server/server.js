@@ -91,6 +91,52 @@ app.delete('/deleteBook/:id', async (req, res) => {
   }
 });
 
+// Handle GET requests to /books
+app.get('/searchBooks', async (req, res) => {
+  try {
+    // Create a connection to the database
+    const connection = await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: 'rootABCD1234@',
+      database: 'LMS',
+    });
+
+    // Build the SQL query based on the search and filter parameters
+    let query = 'SELECT * FROM books';
+    const { keywords, author, status } = req.query;
+    if (keywords) {
+      query += ` WHERE title LIKE '%${keywords}%' OR author LIKE '%${keywords}%'`;
+    }
+    if (author) {
+      if (keywords) {
+        query += ' AND';
+      } else {
+        query += ' WHERE';
+      }
+      query += ` author='${author}'`;
+    }
+    if (status) {
+      if (keywords || author) {
+        query += ' AND';
+      } else {
+        query += ' WHERE';
+      }
+      query += ` status='${status}'`;
+    }
+
+    // Execute the query and send the results back to the client
+    const [rows] = await connection.query(query);
+    res.json(rows);
+    console.log(rows)
+    // Close the database connection
+    await connection.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+    }
+    });
+
 
 // Serve the client-side React app
 app.get('*', (req, res) => {
