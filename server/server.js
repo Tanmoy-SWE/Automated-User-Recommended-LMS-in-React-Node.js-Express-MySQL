@@ -60,6 +60,38 @@ app.post('/addBook', async (req, res) => {
   }
 });
 
+// Handle DELETE requests to /deleteBook/:id
+app.delete('/deleteBook/:id', async (req, res) => {
+  try {
+    // Create a connection to the database
+    const connection = await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: 'rootABCD1234@',
+      database: 'LMS',
+    });
+
+    // Delete the book from the books table using the provided book ID
+    const [result] = await connection.query('DELETE FROM books WHERE id = ?', req.params.id);
+    console.log('Hello')
+
+    // If no rows were affected, the book ID was not found
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Book not found' });
+    } else {
+      // Send a response indicating success
+      res.status(200).json({ message: 'Book deleted successfully!' });
+    }
+
+    // Close the database connection
+    await connection.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 // Serve the client-side React app
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
