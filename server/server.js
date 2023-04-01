@@ -4,6 +4,7 @@ const path = require('path');
 const catalogRoutes = require('./catalog/catalog');
 const app = express();
 const cors = require('cors');
+const route = require('./authentication/login')
 const port = 8000;
 
 app.use(cors());
@@ -137,6 +138,8 @@ app.get('/searchBooks', async (req, res) => {
     }
     });
 
+route.get()
+
 
 // Serve the client-side React app
 app.get('*', (req, res) => {
@@ -147,3 +150,6 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+const loginFunc = require('./authentication/login')
+app.use('/login', loginFunc)
