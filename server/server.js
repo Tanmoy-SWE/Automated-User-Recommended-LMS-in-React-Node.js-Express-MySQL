@@ -4,12 +4,10 @@ const path = require('path');
 const catalogRoutes = require('./catalog/catalog');
 const app = express();
 const cors = require('cors');
-const route = require('./authentication/login')
 const port = 8000;
 
 app.use(cors());
 app.use(express.json()); // Add this line to parse request body as JSON
-
 // Serve static files from the client/build directory
 app.use(express.static(path.join(__dirname, '../client/build')));
 
@@ -138,7 +136,34 @@ app.get('/searchBooks', async (req, res) => {
     }
     });
 
-route.get()
+// const loginFunc = require('./authentication/login')
+// app.use('/login', loginFunc)
+
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'rootABCD1234@',
+  database: 'LMS',
+})
+
+app.post('/login', async (req, res)  => {
+  const username = req.body.username;
+  const password = req.body.password;
+  // Create a connection to the database
+  const connection = await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'rootABCD1234@',
+    database: 'LMS',
+  });
+  const [adminUser] =  await connection.query("SELECT * FROM admins WHERE password = ?", req.body.password);
+  const adminUsername = [adminUser][0][0].username;
+  const adminUserpass = [adminUser][0][0].password;
+  if (adminUserpass == "abcd1234"){
+        console.log("Admin Successfully Logged In")
+        res.status(204).send({message : "Checked Tanmoy"})
+  }
+ });
 
 
 // Serve the client-side React app
@@ -150,6 +175,3 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
-
-const loginFunc = require('./authentication/login')
-app.use('/login', loginFunc)
