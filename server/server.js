@@ -59,6 +59,36 @@ app.post('/addBook', async (req, res) => {
   }
 });
 
+// Create a connection to the MySQL database
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'rootABCD1234@',
+  database: 'LMS',
+});
+
+// Connect to the database
+connection.connect((error) => {
+  if (error) {
+    console.error('Error connecting to database: ', error);
+  } else {
+    console.log('Connected to database!');
+  }
+});
+
+// Define an endpoint to retrieve all users
+app.get('/users', (req, res) => {
+  // Query the database to retrieve all users
+  const sql = 'SELECT * FROM users';
+  connection.query(sql, (error, results) => {
+    if (error) {
+      console.error('Error retrieving users: ', error);
+      res.status(500).json({ error: 'Error retrieving users' });
+    } else {
+      res.json(results);
+    }
+  });
+});
 // Handle DELETE requests to /deleteBook/:id
 app.delete('/deleteBook/:id', async (req, res) => {
   try {
@@ -125,16 +155,54 @@ app.get('/searchBooks', async (req, res) => {
     }
 
     // Execute the query and send the results back to the client
-    const [rows] = await connection.query(query);
+    const [rows] = await connection.// Handle POST requests to /addBook
+app.post('/addBook', async (req, res) => {
+      try {
+        // Create a connection to the database
+        const connection = await mysql.createConnection({
+          host: 'localhost',
+          user: 'root',
+          password: 'rootABCD1234@',
+          database: 'LMS',
+        });
+    
+        // Insert the new book into the books table
+        const [result] = await connection.query('INSERT INTO books SET ?', req.body);
+    
+        // Send a response indicating success
+        res.status(201).json({ message: 'Book added successfully!' });
+    
+        // Close the database connection
+        await connection.end();
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Er// Handle GET requests to /books')
+        app.get('/books', async (req, res) => {
+          try {
+            // Create a connection to the database
+            const connection = await mysql.createConnection({
+              host: 'localhost',
+              user: 'root',
+              password: 'rootABCD1234@',
+              database: 'LMS',
+            });
+        
+            // Query the books table and return the results
+            const [rows] = await connection.query('SELECT * FROM books');
+            res.json(rows);
+        
+            // Close the database connection
+            await connection.end();
+          } catch (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+          }
+        });query(query);
     res.json(rows);
     console.log(rows)
     // Close the database connection
     await connection.end();
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
-    }
-    });
+  } 
 
 // const loginFunc = require('./authentication/login')
 // app.use('/login', loginFunc)
@@ -161,9 +229,39 @@ app.post('/login', async (req, res)  => {
   const adminUserpass = [adminUser][0][0].password;
   if (adminUserpass == "abcd1234"){
         console.log("Admin Successfully Logged In")
-        res.status(204).send({message : "Checked Tanmoy"})
+        res.status(204).send({message : "Admin Successfully Logged In"})
+  }
+  else{
+    res.status(304).send({message : "Admin Login Credentials are not valid"})
   }
  });
+
+ // Handle POST requests to /addBook
+app.post('/addUser', async (req, res) => {
+  try {
+    // Create a connection to the database
+    const connection = await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: 'rootABCD1234@',
+      database: 'LMS',
+    });
+
+    // Insert the new user into the users table
+    const [result] = await connection.query('INSERT INTO USERS SET ?', req.body);
+
+    // Send a response indicating success
+    res.status(201).json({ message: 'Users added successfully!' });
+
+    // Close the databascataloge connection
+    await connection.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 
 
 // Serve the client-side React app
